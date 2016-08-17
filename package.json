@@ -1,0 +1,36 @@
+{
+  "name": "access-watch-hapi",
+  "version": "1.0.0",
+  "description": "Hapi plugin for logging and analyzing web traffic using the AccessWatch service.",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape test.js | faucet",
+    "lint": "eslint *.js",
+    "cover": "nyc --check-coverage npm test",
+    "example": "node ./example/server.js",
+    "coveralls": "nyc --check-coverage --reporter=text-lcov npm test | coveralls"
+  },
+  "repository": "https://github.com/access-watch/access-watch-hapi",
+  "keywords": [
+    "accesswatch",
+    "access",
+    "watch",
+    "hapi",
+    "hapijs"
+  ],
+  "author": "johannes@access.watch",
+  "license": "MIT",
+  "dependencies": {
+    "access-watch-node": "^1.0.0"
+  },
+  "devDependencies": {
+    "coveralls": "^2.11.12",
+    "faucet": "0.0.1",
+    "nyc": "^8.1.0",
+    "proxyquire": "^1.7.10",
+    "tape": "^4.6.0"
+  },
+  "peerDependencies": {
+    "hapi": "^14.1.0"
+  }
+}
