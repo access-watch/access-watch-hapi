@@ -21,7 +21,8 @@
   "author": "johannes@access.watch",
   "license": "MIT",
   "dependencies": {
-    "access-watch-node": "^1.0.0"
+    "access-watch-node": "^1.0.0",
+    "boom": "^3.2.2"
   },
   "devDependencies": {
     "coveralls": "^2.11.12",
