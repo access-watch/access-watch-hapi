@@ -3,7 +3,18 @@
 const Hapi = require('hapi');
 const AccessWatch = require('../');
 
-const server = new Hapi.Server({debug: {log: ['AccessWatch']}});
+const devConfig = {
+  // To get debug info printed.
+  debug: {
+    log: ['AccessWatch']
+  }
+};
+
+const prodConfig = {};
+
+const server = new Hapi.Server(
+  process.env.NODE_ENV === 'production' ? prodConfig : devConfig
+);
 
 server.connection({port: 3000});
 
@@ -22,19 +33,18 @@ server.register({
   if (err) {
     throw err;
   }
-
-  server.route({
-    method: 'GET',
-    path: '/',
-    handler: (req, reply) => {
-      reply('Well hello there, World!');
-    }
-  });
-
-  server.start(err => {
-    if (err) {
-      throw err;
-    }
-  });
 });
 
+server.route({
+  method: 'GET',
+  path: '/',
+  handler: (req, reply) => {
+    reply('Hello World!');
+  }
+});
+
+server.start(err => {
+  if (err) {
+    throw err;
+  }
+});
