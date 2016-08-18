@@ -11,10 +11,36 @@ npm install --save access-watch-hapi
 
 ## Usage ##
 
-Using the plugin is easy, Hapi provides has we need. The `config` object is
-directly passed to `access-watch-node`. Required parameters are `apiKey` and
-`cache`. If your hapi application is behind a reverse proxy, you also need to
-set `fwdHeaders`. Please see
+The plugin is registered like any hapi plugin, on the `server` instance:
+
+```js
+const server = new Hapi.Server();
+server.register({
+  register: AccessWatch,
+  options: {
+    // these are directly passed to access-watch-node
+    apiKey: '{API-KEY}',
+    // optionally pass a custom cache client here, ie
+    // otherwise hapi's default is used
+    cache: server.cache({
+      cache: 'redis'
+      expiresIn: 20 * 60 * 1000, // 20min ttl
+      segment: 'accesswatch#'
+    });
+
+    // If the server runs behind a reverse proxy that sets the standard
+    // forwarded headers. See the links below
+    fwdHeaders: AccessWatch.fwdHeaders
+  }
+});
+```
+
+The `config` object is directly passed to `access-watch-node`. The only required
+parameter is `apiKey`. **If your hapi server is behind a reverse proxy**, you
+also need to set
+[`fwdHeaders`](https://github.com/access-watch/access-watch-node/blob/master/api.md#accesswatchfwdheaders--accesswatchforwardheaders).
+These are not set by default.
+Please see
 [access-watch-node](https://github.com/access-watch/access-watch-node) for
 details.
 
@@ -24,52 +50,12 @@ To enable verbose logging pass `{debug: {log: ['AccessWatch']}}`
 
 ## Example ##
 
-```js
-'use strict';
-
-const Hapi = require('hapi');
-const AccessWatch = require('../');
-
-const server = new Hapi.Server({debug: {log: ['AccessWatch']}});
-
-server.connection({port: 3000});
-
-const awCache = server.cache({
-  expiresIn: 20 * 60 * 1000, // 20min ttl
-  segment: 'accesswatch#'
-});
-
-server.register({
-  register: AccessWatch,
-  options: {
-    apiKey: '{API-KEY}',
-    cache: awCache
-  }
-}, err => {
-  if (err) {
-    throw err;
-  }
-
-  server.route({
-    method: 'GET',
-    path: '/',
-    handler: (req, reply) => {
-      reply('Well hello there, World!');
-    }
-  });
-
-  server.start(err => {
-    if (err) {
-      throw err;
-    }
-  });
-});
-```
+[See the example](./example/server.js)
 
 Try it out by cloning this repo and run
 
 ```
 npm install
+npm install hapi
 npm run example
 ```
-

@@ -18,16 +18,10 @@ const server = new Hapi.Server(
 
 server.connection({port: 3000});
 
-const awCache = server.cache({
-  expiresIn: 20 * 60 * 1000, // 20min ttl
-  segment: 'accesswatch#'
-});
-
 server.register({
   register: AccessWatch,
   options: {
-    apiKey: '1b3e63591870fdd1b3cd6eb304b81aa1',
-    cache: awCache
+    apiKey: '1b3e63591870fdd1b3cd6eb304b81aa1'
   }
 }, err => {
   if (err) {
