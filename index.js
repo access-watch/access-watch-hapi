@@ -1,6 +1,6 @@
 'use strict';
 
-const AccessWatch = require('node-access-watch');
+const AccessWatch = require('access-watch-node');
 const Boom = require('boom');
 
 const TAG = 'AccessWatch';

@@ -11,7 +11,7 @@ test('call hello() on init', t => {
 
   t.plan(2);
   const plugin = proxyquire('./index', {
-    'node-access-watch': function() {
+    'access-watch-node': function() {
       this.hello = function() {
         t.pass('hello() was called');
         return Promise.resolve();
@@ -49,7 +49,7 @@ test('call checkBlocked() on request', childTest => {
     };
 
     const plugin = proxyquire('./index', {
-      'node-access-watch': function() {
+      'access-watch-node': function() {
         this.hello = () => Promise.resolve();
         this.checkBlocked = function(req) {
           t.same(req, mockReq.raw.req, 'checkBlocked(req) was called');
@@ -84,7 +84,7 @@ test('call checkBlocked() on request', childTest => {
     };
 
     const plugin = proxyquire('./index', {
-      'node-access-watch': function() {
+      'access-watch-node': function() {
         this.hello = () => Promise.resolve();
         this.checkBlocked = req => {
           t.same(req, mockReq.raw.req, 'checkBlocked(req) was called');
@@ -123,7 +123,7 @@ test('call log() after response', t => {
   };
 
   const plugin = proxyquire('./index', {
-    'node-access-watch': function() {
+    'access-watch-node': function() {
 
       // make these can also reject
       this.hello = () => Promise.reject();
