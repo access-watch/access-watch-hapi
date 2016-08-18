@@ -6,7 +6,17 @@ const Boom = require('boom');
 const TAG = 'AccessWatch';
 
 exports.register = function(server, options, next) {
-  const aw = new AccessWatch(Object.assign({}, options));
+  if (!options.cache) {
+    // if no cache is passed, use hapi's default cache
+    options = Object.assign({
+      cache: server.cache({
+        expiresIn: 20 * 60 * 1000, // 20min ttl
+        segment: 'accesswatch#'
+      })
+    }, options);
+  }
+
+  const aw = new AccessWatch(options);
 
   // Say hello to access watch and ensure pleasent response
   aw.hello().then(_ => {

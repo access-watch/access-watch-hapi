@@ -1,13 +1,56 @@
 'use strict';
 const proxyquire = require('proxyquire').noCallThru();
 const test = require('tape');
+const dummyCache = {
+  get: cb => cb(),
+  set: cb => cb(),
+  drop: cb => cb()
+};
+
+const dummyServer = {
+  log: () => {},
+  ext: () => {},
+  on: () => {},
+  cache: () => dummyCache
+};
+
+test('handles configuration on register', t => {
+  t.plan(5);
+
+  const mockServer = Object.assign({}, dummyServer);
+  const opts = {
+    apiKey: '12345',
+  };
+
+  const optsB = Object.assign({}, opts, {
+    cache: {
+      get: cb => cb(),
+      set: cb => cb(),
+      drop: cb => cb()
+    }
+  });
+
+  proxyquire('./', {
+    'access-watch-node': function(options) {
+      t.notDeepEqual(options, opts);
+      t.deepEqual(options.cache, dummyServer.cache());
+      t.equal(options.apiKey, '12345');
+      this.hello = () => Promise.resolve();
+    }
+  }).register(mockServer, opts, () => {});
+
+  proxyquire('./', {
+    'access-watch-node': function(options) {
+      t.deepEqual(options, optsB);
+      t.equal(options.apiKey, '12345');
+      this.hello = () => Promise.resolve();
+    }
+  }).register(mockServer, optsB, () => {});
+
+});
 
 test('call hello() on init', t => {
-  const mockServer = {
-    log: () => {},
-    ext: () => {},
-    on: () => {}
-  };
+  const mockServer = Object.assign({}, dummyServer);
 
   t.plan(2);
   const plugin = proxyquire('./index', {
@@ -39,14 +82,12 @@ test('call checkBlocked() on request', childTest => {
 
     let handleRequest = null;
 
-    const mockServer = {
-      log: () => {},
+    const mockServer = Object.assign({}, dummyServer, {
       ext: (event, handler) => {
         t.assert(event === 'onRequest', 'Add the request hook');
         handleRequest = handler;
       },
-      on: () => {}
-    };
+    });
 
     const plugin = proxyquire('./index', {
       'access-watch-node': function() {
@@ -74,14 +115,12 @@ test('call checkBlocked() on request', childTest => {
 
     let handleRequest = null;
 
-    const mockServer = {
-      log: () => {},
+    const mockServer = Object.assign({}, dummyServer, {
       ext: (event, handler) => {
         t.assert(event === 'onRequest', 'Add the request hook');
         handleRequest = handler;
-      },
-      on: () => {}
-    };
+      }
+    });
 
     const plugin = proxyquire('./index', {
       'access-watch-node': function() {
@@ -113,14 +152,12 @@ test('call log() after response', t => {
 
   let handleResponse = null;
 
-  const mockServer = {
-    log: () => {},
-    ext: () => {},
+  const mockServer = Object.assign({}, dummyServer, {
     on: (event, handler) => {
       t.assert(event === 'response', 'Add the response hook');
       handleResponse = handler;
     }
-  };
+  });
 
   const plugin = proxyquire('./index', {
     'access-watch-node': function() {
